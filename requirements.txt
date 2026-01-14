@@ -1,2 +1,8 @@
 google
 fastapi
+pydantic-settings
+functools
+app
+
+# for localhost
+uvicorn
