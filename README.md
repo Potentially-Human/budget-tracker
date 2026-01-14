@@ -6,6 +6,7 @@ I have also not tested anything in llm_caller so it probably has tons of bugs.
 
 backend structure - tentative
 
+```
 backend/
 ├── app/                         
 │   ├── main.py                  # Creates FastAPI app, registers routes - basically very important
@@ -25,3 +26,4 @@ backend/
 ├── .env                         # SECRET - environment variables (git-ignored)
 ├── .gitignore                   
 └── budget_tracker.db            # SQLite database file (created automatically)
+```
