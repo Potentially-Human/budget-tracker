@@ -6,3 +6,10 @@ app
 
 # for localhost
 uvicorn
+
+# for audio playback
+simpleaudio
+numpy
+
+# for audio processing
+pydub

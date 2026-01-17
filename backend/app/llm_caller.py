@@ -1,18 +1,26 @@
 from google import genai
 import asyncio
+import simpleaudio as sa
+import numpy as np
 
-API_KEY = "AIzaSyAKt47OUwz3Yns08ncxBfOVy78FZVKEJhU"
+API_KEY = ""
 MODEL = "gemini-3-flash-preview"
 
 SYSTEM_INSTRUCTIONS = "Be smart."
 
 TOOLS = [{
-    "function_declerations": [
+    "function_declarations": [
         {
-            "name": "add_to_db",
+            "name": "add_to_database",
             "description": "Adds an entry of spending or income to the user's personal database",
             "parameters": {
-                "example_param": "param"
+                "type": "object",
+                "properties": {
+                    "amount": {"type": "number"},
+                    "category": {"type": "string"},
+                    "description": {"type": "string"}
+                },
+                "required": ["amount", "category"]
             }
         }
     ]
@@ -23,8 +31,6 @@ AUDIO_CONFIG = {
     "response_modalities": ["AUDIO"],
     "system_instruction": SYSTEM_INSTRUCTIONS,
 }
-
-
 
 
 class LLMCaller:
@@ -49,12 +55,14 @@ class LLMCaller:
         except InterruptedError:
             print("Interrupted")
 
-    def add_to_database(self, ):
-        pass
+    def add_to_database(self, amount, category, description=None):
+        # Implement adding to database
+        print(f"Adding to database: amount={amount}, category={category}, description={description}")
+        return "Entry added successfully"
 
 
 class AudioSession:
-    async def __init__(self, client, tools):
+    def __init__(self, client, tools):
         self.config = AUDIO_CONFIG
         self.client = client
         self.closed = False
@@ -89,15 +97,23 @@ class AudioSession:
             while not self.audio_output_queue.empty():
                 self.audio_output_queue.get_nowait()
 
-    async def send_response(self, ):
-        # Function to send the response back to the client
-        pass
+    async def send_response(self):
+        while True:
+            audio_data = await self.audio_output_queue.get()
+            if audio_data:
+                # Assuming 16-bit PCM, mono, 16kHz
+                sample_rate = 16000
+                audio_array = np.frombuffer(audio_data, dtype=np.int16)
+                def play_audio():
+                    play_obj = sa.play_buffer(audio_array, 1, 2, sample_rate)
+                    play_obj.wait_done()
+                await asyncio.get_event_loop().run_in_executor(None, play_audio)
 
     async def handle_tool_call(self, session, function_calls):
         for call in function_calls:
             print(f"Gemini requested: {call.name} with args: {call.args}")
             try:
-                result = self.tools[call.name]()
+                result = self.tools[call.name](**call.args)
             except KeyError:
                 print("Function does not exist")
                 result = "Function does not exist"
