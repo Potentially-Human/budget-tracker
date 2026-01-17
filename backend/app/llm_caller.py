@@ -6,10 +6,25 @@ MODEL = "gemini-3-flash-preview"
 
 SYSTEM_INSTRUCTIONS = "Be smart."
 
+TOOLS = [{
+    "function_declerations": [
+        {
+            "name": "add_to_db",
+            "description": "Adds an entry of spending or income to the user's personal database",
+            "parameters": {
+                "example_param": "param"
+            }
+        }
+    ]
+}]
+
 AUDIO_CONFIG = {
+    "tools": TOOLS,
     "response_modalities": ["AUDIO"],
     "system_instruction": SYSTEM_INSTRUCTIONS,
 }
+
+
 
 
 class LLMCaller:
@@ -17,6 +32,7 @@ class LLMCaller:
         self.api_key = api_key
         self.model = model
         self.client = genai.Client(api_key=API_KEY)
+        self.tools = {"add_to_database": self.add_to_database}
 
     def call_text(self, text):
         response = self.client.models.generate_content(
@@ -27,20 +43,24 @@ class LLMCaller:
         return response
 
     def call_audio(self):
-        audio_session = AudioSession(self.client)
+        audio_session = AudioSession(self.client, self.tools)
         try:
             asyncio.run(audio_session.activate())
         except InterruptedError:
             print("Interrupted")
 
+    def add_to_database(self, ):
+        pass
+
 
 class AudioSession:
-    async def __init__(self, client):
+    async def __init__(self, client, tools):
         self.config = AUDIO_CONFIG
         self.client = client
         self.closed = False
         self.audio_mic_queue = asyncio.Queue()
         self.audio_output_queue = asyncio.Queue()
+        self.tools = tools
 
     async def recieve_audio(self, audio):
         # audio should be in 16-bit PCM format
@@ -58,10 +78,12 @@ class AudioSession:
         while True:
             turn = session.receive()
             async for response in turn:
-                if (response.server_content and response.server_content.model_turn):
+                if response.tool_call is not None:
+                    await self.handle_tool_call(session, response.tool_call.function_call) # noqa E501
+                if (response.server_content and response.server_content.model_turn): # noqa E501
                     for part in response.server_content.model_turn.parts:
-                        if part.inline_data and isinstance(part.inline_data.data, bytes):
-                            self.audio_output_queue.put_nowait(part.inline_data.data)
+                        if part.inline_data and isinstance(part.inline_data.data, bytes): # noqa E501
+                            self.audio_output_queue.put_nowait(part.inline_data.data) # noqa E501
 
             # Empty the queue on interruption to stop playback
             while not self.audio_output_queue.empty():
@@ -70,6 +92,31 @@ class AudioSession:
     async def send_response(self, ):
         # Function to send the response back to the client
         pass
+
+    async def handle_tool_call(self, session, function_calls):
+        for call in function_calls:
+            print(f"Gemini requested: {call.name} with args: {call.args}")
+            try:
+                result = self.tools[call.name]()
+            except KeyError:
+                print("Function does not exist")
+                result = "Function does not exist"
+
+            # 3. Send the result back to the model
+            # The 'id' must match the 'id' from the tool_call
+            await session.send(
+                input={
+                    "tool_response": {
+                        "function_responses": [{
+                            "name": call.name,
+                            "response": result,
+                            "id": call.id
+                        }]
+                    }
+                },
+                end_of_turn=True
+            )
+            print("Response sent back to Gemini.")
 
     async def activate(self):
         try:
