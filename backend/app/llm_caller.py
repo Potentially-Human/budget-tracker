@@ -65,7 +65,7 @@ class LLMCaller:
             print("Interrupted")
 
     def add_to_database(self, amount, category, description=None):
-        # Implement adding to database
+        # Implement adding to database, and also other functions wherever needed
         print(f"Adding to database: amount={amount}, category={category}, description={description}")
         return {"status": "success", "message": "Entry added successfully"}
 
@@ -130,7 +130,9 @@ class AudioSession:
     async def send_response(self):
         """
         Will be a function to send responses back to the user.
-        Currently it just plays audio responses from Gemini."""
+        Currently it just plays audio responses from Gemini.
+        AI wrote this function. 
+        """
         while not self.stop_event.is_set():
             try:
                 audio_data = await asyncio.wait_for(self.audio_output_queue.get(), timeout=0.5)
