@@ -13,7 +13,6 @@ class NarrativeResponse(BaseModel):
     recommendations: list[str]
     generated_at: str
 
-
 class SpendingPattern(BaseModel):
     """Identified spending patterns."""
     pattern_type: str  # "increasing", "decreasing", "stable", "irregular"

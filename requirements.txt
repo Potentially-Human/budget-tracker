@@ -1,11 +1,15 @@
 google
-fastapi
+google-generativeai==0.8.3
+
+fastapi==0.115.5
 pydantic-settings
-functools
+# functools # this gave me an error?
 app
 
+python-multipart==0.0.20
+
 # for localhost
-uvicorn
+uvicorn[standard]==0.34.0
 
 # for audio playback
 simpleaudio
@@ -13,3 +17,14 @@ numpy
 
 # for audio processing
 pydub
+
+# database
+sqlalchemy==2.0.36
+
+
+pydantic-settings==2.6.1
+python-dotenv==1.0.0
+
+# auth/security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4

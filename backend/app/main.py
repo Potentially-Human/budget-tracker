@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from app.config import get_settings
 from app.database import engine, Base
-from app.api import categories
+from app.api import auth, peer_groups, ai_insights, transactions, voice
 
 # for later, when actually importing functions/endpoints
 # from app.api import auth, transactions, budgets, voice, insights, circles
@@ -42,13 +42,12 @@ app.add_middleware(
 )
 
 # Include routers - LATER
-# app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-# app.include_router(transactions.router, prefix="/transactions", tags=["Transactions"])
-app.include_router(categories.router, prefix="/categories", tags=["Categories"])
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(transactions.router, prefix="/transactions", tags=["Transactions"])
 # app.include_router(budgets.router, prefix="/budgets", tags=["Budgets"])
-# app.include_router(voice.router, prefix="/voice", tags=["Voice Input"])
-# app.include_router(insights.router, prefix="/insights", tags=["AI Insights"])
-# app.include_router(circles.router, prefix="/circles", tags=["Spending Circles"])
+app.include_router(voice.router, prefix="/voice", tags=["Voice Input"])
+app.include_router(ai_insights.router, prefix="/insights", tags=["AI Insights"])
+app.include_router(peer_groups.router, prefix="/circles", tags=["Spending Circles"])
 
 
 @app.get("/")
