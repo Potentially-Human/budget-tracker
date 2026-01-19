@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Boolean
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from enum import Enum
@@ -23,7 +24,7 @@ class Transaction(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     amount = Column(Float, nullable=False)
-    category = Column(TransactionCategory, nullable=False)  # "food", "transport", "entertainment", etc.
+    category = Column(SQLEnum(TransactionCategory), nullable=False)  # "food", "transport", "entertainment", etc.
     merchant = Column(String)
     date = Column(DateTime, default=datetime.utcnow)
     notes = Column(String)
