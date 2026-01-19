@@ -45,7 +45,7 @@ AUDIO_CONFIG = {
 class LLMCaller:
     def __init__(self, api_key, model):
         self.api_key = api_key
-        self.model = model
+        self.model = TEXT_MODEL
         self.client = genai.Client(api_key=API_KEY)
         self.tools = {"add_to_database": self.add_to_database}
         self.audio_session = AudioSession(self.client, self.tools)
@@ -74,7 +74,6 @@ class AudioSession:
     def __init__(self, client, tools):
         self.config = AUDIO_CONFIG
         self.audio_model = AUDIO_MODEL
-        self.transcription_model = TRANSCRIPTION_MODEL
         self.client = client
         self.closed = False
         self.audio_mic_queue = asyncio.Queue(maxsize=5)
