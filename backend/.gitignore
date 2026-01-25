@@ -1,5 +1,5 @@
-backend/.env
-backend/app/__pycache__
-backend/app/api/__pycache__
-backend/budget_tracker.db
-backend/budget_tracker.db-journal
+.env
+app/__pycache__
+app/api/__pycache__
+budget_tracker.db
+budget_tracker.db-journal
