@@ -31,5 +31,5 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships: access user's data via user.transactions, user.budgets
-    transactions = relationship("Transaction", back_populates="user")
-    budgets = relationship("Budget", back_populates="user")
+    transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
+    budgets = relationship("Budget", back_populates="user", cascade="all, delete-orphan")

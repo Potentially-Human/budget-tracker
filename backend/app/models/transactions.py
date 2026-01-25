@@ -32,6 +32,6 @@ class Transaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationship to User (optional but useful)
-    user = relationship("User", backref="transactions")
+    user = relationship("User", back_populates="transactions")
 
 

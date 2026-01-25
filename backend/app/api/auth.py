@@ -6,9 +6,10 @@ from jose import JWTError, jwt
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserResponse
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserResponse, UpdateProfileRequest
 from app.src.security import hash_password, verify_password
 from app.config import get_settings
+from app.models.user import IncomeRange
 
 settings = get_settings()
 router = APIRouter()
@@ -114,17 +115,29 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
 
 @router.put("/me", response_model=UserResponse)
 async def update_user_profile(
-    income_range: str | None = None,
-    goals: dict | None = None,
+    profile_data: UpdateProfileRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """Update user profile (income range, goals)."""
-    if income_range:
-        current_user.income_range = income_range
-    if goals:
-        current_user.goals = goals
+    if profile_data.income_range is not None:
+        current_user.income_range = profile_data.income_range
+    if profile_data.goals is not None:
+        current_user.goals = profile_data.goals
     
     db.commit()
     db.refresh(current_user)
     return current_user
+
+@router.delete("/me", response_model=UserResponse)
+async def delete_user(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Delete user profile -  PERMANENT & IRREVERSIBLE WARNING
+    this automatically deletes all user budgets and transactions
+    """
+    db.delete(current_user)
+    db.commit()
+    return None
+    
