@@ -6,6 +6,21 @@ I have also not tested anything in llm_caller so it probably has tons of bugs.
 
 backend structure - tentative
 
+### To start the app
+Start backend
+```bash
+cd backend
+uvicorn app.main:app --reload
+```
+Start frontend
+```bash
+cd frontend
+npm run dev
+```
+Now frontend is running on http://localhost:5173, backend at http://localhost:8000.
+
+
+### Backend general structure
 ```
 backend/
 ├── app/                         
