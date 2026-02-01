@@ -1,5 +1,10 @@
+# Environment variables
 .env
-app/__pycache__
-app/api/__pycache__
+
+# Database files
 budget_tracker.db
 budget_tracker.db-journal
+
+# Python cache
+__pycache__/
+*.py[cod]

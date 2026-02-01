@@ -29,6 +29,8 @@ class UpdateProfileRequest(BaseModel):
         return v
     
 class RegisterRequest(BaseModel):
+    firstname: str
+    lastname: str
     email: EmailStr
     password: str
     income_range: str | None = None
@@ -49,6 +51,8 @@ class TokenResponse(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
+    firstname: str
+    lastname: str
     email: str
     income_range: IncomeRange | None
     goals: dict | None

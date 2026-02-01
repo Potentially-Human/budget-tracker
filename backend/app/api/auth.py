@@ -77,6 +77,8 @@ async def register(user_data: RegisterRequest, db: Session = Depends(get_db)):
     
     # Create new user
     new_user = User(
+        firstname=user_data.firstname,
+        lastname=user_data.lastname,
         email=user_data.email,
         hashed_password=hash_password(user_data.password),
         income_range=user_data.income_range,
